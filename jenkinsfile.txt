@@ -1,0 +1,25 @@
+pipeline {
+    agent any
+    environment {
+        PATH = "$PATH:/opt/apache-maven-3.9.6/bin"
+    }
+    stages {
+        stage('GetCode') {
+            steps {
+                git credentialsId: '45ef213d-5257-466e-8c88-1390d6189b87', url: 'https://github.com/shaheparDada/dadaki-repo.git', branch: 'main'
+            }
+        }
+        stage('build') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+        stage('SonarQube analysis') {
+            steps {
+                withSonarQubeEnv('Sonar-server-7.8') {
+                    sh "mvn sonar:sonar"
+                }
+            }
+        }
+    }
+}
